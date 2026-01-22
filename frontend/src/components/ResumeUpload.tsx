@@ -86,6 +86,11 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({
 
         setIsUploading(true);
         setError(null);
+        
+        // Record start time for minimum loading duration
+        const startTime = Date.now();
+        const MIN_LOADING_TIME = 5000; // 5 seconds minimum
+        
         onAnalyzing();
 
         try {
@@ -99,6 +104,16 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({
             const response = await Promise.race([uploadPromise, timeoutPromise]) as any;
             
             console.log('✅ Resume upload successful:', response);
+            
+            // Ensure minimum loading time of 5 seconds
+            const elapsedTime = Date.now() - startTime;
+            const remainingTime = Math.max(0, MIN_LOADING_TIME - elapsedTime);
+            
+            if (remainingTime > 0) {
+                console.log(`⏳ Waiting ${remainingTime}ms to complete minimum loading time...`);
+                await new Promise(resolve => setTimeout(resolve, remainingTime));
+            }
+            
             setIsUploading(false);
             onUploadSuccess(response.resume, response.analysis);
         } catch (err) {

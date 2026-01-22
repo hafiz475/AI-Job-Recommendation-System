@@ -129,7 +129,7 @@ async def upload_resume(
         return ResumeUploadResponse(
             resume=resume_response,
             analysis=analysis_response,
-            message="Resume uploaded and analyzed successfully!"
+            message=f"Resume uploaded and analyzed successfully! (Provider: {ai_service.get_provider_name()})"
         )
         
     except ValueError as e:

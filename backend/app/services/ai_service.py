@@ -42,6 +42,58 @@ class DemoProvider(AIProvider):
         "leadership", "communication", "teamwork", "problem solving", 
         "project management", "analytical", "creative", "detail-oriented"
     ]
+
+    # Broader, multi-industry keywords so demo mode works for many resume types
+    BUSINESS_SKILLS = [
+        "excel", "power bi", "tableau", "sql", "data analysis", "data visualization",
+        "business analysis", "requirements gathering", "stakeholder management",
+        "kpi", "okr", "dashboard", "reporting", "forecasting", "budgeting",
+        "financial modeling", "accounting", "bookkeeping", "quickbooks",
+        "sap", "oracle", "netsuite", "erp", "crm", "salesforce", "hubspot",
+        "market research", "competitive analysis", "pricing", "go-to-market",
+        "seo", "sem", "google analytics", "ads", "campaign management", "content marketing",
+        "customer success", "account management", "sales", "lead generation",
+        "procurement", "supply chain", "logistics", "inventory management",
+        "quality assurance", "iso", "compliance", "risk management",
+        "customer service", "call center", "support", "ticketing", "zendesk", "freshdesk",
+        "human resources", "recruitment", "talent acquisition", "payroll", "onboarding",
+        "training", "learning and development", "performance management",
+    ]
+
+    HEALTHCARE_SKILLS = [
+        "nursing", "registered nurse", "patient care", "clinical", "phlebotomy",
+        "emr", "ehr", "epic", "cerner", "hipaa", "medical coding", "icd", "cpt",
+        "radiology", "laboratory", "pharmacy", "therapist", "physiotherapy",
+    ]
+
+    EDUCATION_SKILLS = [
+        "teaching", "curriculum", "lesson planning", "classroom management",
+        "assessment", "learning outcomes", "student counseling", "mentoring",
+        "training", "facilitation",
+    ]
+
+    DESIGN_SKILLS = [
+        "ui", "ux", "figma", "sketch", "adobe xd", "photoshop", "illustrator",
+        "branding", "graphic design", "wireframing", "prototyping", "user research",
+    ]
+
+    # Role patterns for many job families (kept simple for demo mode)
+    ROLE_PATTERNS = [
+        # Tech
+        r"software engineer", r"developer", r"full[-\s]?stack", r"frontend", r"back[-\s]?end",
+        r"data scientist", r"data engineer", r"devops", r"qa engineer", r"test engineer",
+        r"product manager", r"project manager", r"scrum master",
+        # Data / Business
+        r"data analyst", r"business analyst", r"financial analyst", r"accountant", r"auditor",
+        r"operations manager", r"operations analyst", r"supply chain", r"logistics",
+        r"customer success", r"account manager", r"sales", r"sales executive",
+        r"marketing", r"digital marketing", r"seo", r"content", r"brand manager",
+        r"hr", r"human resources", r"recruiter", r"talent acquisition",
+        # Healthcare / Education / Design
+        r"nurse", r"registered nurse", r"medical", r"clinical", r"pharmacist",
+        r"teacher", r"instructor", r"trainer",
+        r"designer", r"graphic designer", r"ui/ux", r"ux designer", r"ui designer",
+    ]
     
     async def analyze_resume(self, resume_text: str) -> Dict[str, Any]:
         """Extract skills from resume using pattern matching."""
@@ -56,16 +108,19 @@ class DemoProvider(AIProvider):
         for skill in self.SOFT_SKILLS:
             if skill in text_lower:
                 found_skills.append(skill.title())
+
+        for skill in self.BUSINESS_SKILLS + self.HEALTHCARE_SKILLS + self.EDUCATION_SKILLS + self.DESIGN_SKILLS:
+            if skill in text_lower:
+                found_skills.append(skill.title())
         
         # Extract potential job titles
-        role_patterns = [
-            r"software engineer", r"developer", r"data scientist", r"analyst",
-            r"manager", r"architect", r"designer", r"consultant", r"engineer"
-        ]
         roles = []
-        for pattern in role_patterns:
+        for pattern in self.ROLE_PATTERNS:
             if re.search(pattern, text_lower):
-                roles.append(pattern.title())
+                # Turn pattern into a readable role label
+                label = pattern.replace(r"[-\s]?", " ").replace("\\", "")
+                label = re.sub(r"\s+", " ", label).strip()
+                roles.append(label.title())
         
         if not roles:
             roles = ["Software Developer", "Technical Specialist"]
@@ -91,40 +146,69 @@ class DemoProvider(AIProvider):
         resume_analysis: Dict[str, Any],
         num_recommendations: int = 5
     ) -> List[Dict[str, Any]]:
-        """Generate mock job recommendations."""
-        skills = resume_analysis.get("skills", ["Python", "JavaScript"])
-        roles = resume_analysis.get("role_keywords", ["Software Developer"])
+        """
+        Generate mock job recommendations that are tailored to the user's resume.
         
-        job_templates = [
-            {"title": "Senior Software Engineer", "company": "TechVentures Inc.", "score": 92},
-            {"title": "Full Stack Developer", "company": "InnovateTech", "score": 88},
-            {"title": "Backend Developer", "company": "CloudSystems Co.", "score": 85},
-            {"title": "Software Architect", "company": "Enterprise Solutions", "score": 78},
-            {"title": "Technical Lead", "company": "StartupHub", "score": 75},
-            {"title": "DevOps Engineer", "company": "ScaleUp Technologies", "score": 72},
-            {"title": "Data Engineer", "company": "DataFlow Analytics", "score": 70},
+        Even in demo mode (without real AI APIs), we use the extracted
+        role keywords and skills from the resume to build relevant titles
+        and descriptions instead of fixed generic ones.
+        """
+        skills = resume_analysis.get("skills", []) or ["General Programming", "Problem Solving"]
+        roles = resume_analysis.get("role_keywords", []) or ["Software Developer"]
+
+        # Some sample companies to rotate through
+        companies = [
+            "TechVentures Inc.",
+            "InnovateTech",
+            "CloudSystems Co.",
+            "Enterprise Solutions",
+            "StartupHub",
+            "ScaleUp Technologies",
+            "DataFlow Analytics",
         ]
-        
-        recommendations = []
-        for i in range(min(num_recommendations, len(job_templates))):
-            job = job_templates[i]
-            matching = skills[:4] if skills else ["Technical Skills"]
-            missing = ["Leadership", "System Design"] if i > 2 else []
-            
-            recommendations.append({
-                "job_title": job["title"],
-                "company": job["company"],
-                "location": "Remote / Hybrid",
-                "job_description": f"We are seeking a talented {job['title']} to join our team. You will work on exciting projects, collaborate with cross-functional teams, and contribute to building scalable solutions. The ideal candidate has strong skills in {', '.join(matching[:3])}.",
-                "match_score": job["score"],
-                "explanation": f"This role is an excellent match for your profile! Your skills in {', '.join(matching[:3])} align perfectly with our requirements. Your experience makes you a strong candidate for this position.",
-                "matching_skills": matching,
-                "missing_skills": missing,
-                "experience_level": "Senior" if job["score"] > 80 else "Mid-level",
-                "salary_range": f"${90 + job['score'] // 10 * 10},000 - ${110 + job['score'] // 10 * 10},000",
-                "job_type": "Full-time"
-            })
-        
+
+        # Base score we will decrease slightly for each additional recommendation
+        base_score = 92
+
+        recommendations: List[Dict[str, Any]] = []
+        for i in range(num_recommendations):
+            role_title = roles[i % len(roles)]
+            company = companies[i % len(companies)]
+            matching = skills[:5] if skills else ["Technical Skills"]
+
+            score = max(60, base_score - i * 4)
+            experience_level = "Senior" if score >= 85 else "Mid-level" if score >= 75 else "Junior / Entry-level"
+
+            job_description = (
+                f"We are looking for a {role_title} to join our team at {company}. "
+                f"In this role, you will work with technologies such as {', '.join(matching[:3])}, "
+                "collaborate with cross-functional teams, and help design and build scalable solutions. "
+                "You should be comfortable taking ownership of features, writing clean code, and continuously learning."
+            )
+
+            explanation = (
+                f"This position matches your background because of your experience with "
+                f"{', '.join(matching[:3])}. "
+                f"Your profile indicates that you are well suited for roles like {role_title}, "
+                "so this opportunity aligns closely with your skills and trajectory."
+            )
+
+            recommendations.append(
+                {
+                    "job_title": role_title,
+                    "company": company,
+                    "location": "Remote / Hybrid",
+                    "job_description": job_description,
+                    "match_score": score,
+                    "explanation": explanation,
+                    "matching_skills": matching,
+                    "missing_skills": [],
+                    "experience_level": experience_level,
+                    "salary_range": f"${90 + (score // 10) * 10},000 - ${110 + (score // 10) * 10},000",
+                    "job_type": "Full-time",
+                }
+            )
+
         return recommendations
 
 
@@ -422,6 +506,7 @@ class AIService:
     
     def __init__(self):
         self.provider: Optional[AIProvider] = None
+        self.provider_name: str = "demo"
     
     def _get_provider(self) -> AIProvider:
         """Get or initialize the AI provider. Falls back to Demo mode if no API key."""
@@ -433,16 +518,27 @@ class AIService:
             if settings.ai_provider.lower() == "openai" and has_openai:
                 print("🤖 Using OpenAI provider")
                 self.provider = OpenAIProvider()
+                self.provider_name = "openai"
             elif has_gemini:
                 print("🤖 Using Gemini provider")
                 self.provider = GeminiProvider()
+                self.provider_name = "gemini"
             elif has_openai:
                 print("🤖 Using OpenAI provider")
                 self.provider = OpenAIProvider()
+                self.provider_name = "openai"
             else:
                 print("⚠️  No API key configured - Using Demo mode (add GEMINI_API_KEY or OPENAI_API_KEY to .env)")
                 self.provider = DemoProvider()
+                self.provider_name = "demo"
         return self.provider
+
+    def get_provider_name(self) -> str:
+        """Return the currently used provider name (demo/gemini/openai)."""
+        # Ensure provider has been initialized at least once
+        if self.provider is None:
+            self._get_provider()
+        return self.provider_name
     
     async def analyze_resume(self, resume_text: str) -> Dict[str, Any]:
         """Analyze resume and extract structured data."""

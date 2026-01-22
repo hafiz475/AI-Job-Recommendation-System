@@ -67,6 +67,10 @@ async def get_job_recommendations(
         # Store recommendations in database
         stored_recommendations = []
         for rec in recommendations:
+            provider_name = ai_service.get_provider_name()
+            explanation = rec.get("explanation", "") or ""
+            if provider_name == "demo":
+                explanation = (explanation + " (Note: demo mode uses keyword-based matching; for best accuracy configure GEMINI_API_KEY or OPENAI_API_KEY.)").strip()
             job_match = JobMatch(
                 user_id=resume.user_id,
                 resume_id=resume.id,
@@ -74,7 +78,7 @@ async def get_job_recommendations(
                 company=rec.get("company"),
                 job_description=rec.get("job_description"),
                 match_score=rec.get("match_score", 0),
-                explanation=rec.get("explanation", ""),
+                explanation=explanation,
                 matching_skills=rec.get("matching_skills", []),
                 missing_skills=rec.get("missing_skills", [])
             )
