@@ -6,6 +6,7 @@ import './ResumeUpload.css';
 interface ResumeUploadProps {
     onUploadSuccess: (resume: Resume, analysis: ResumeAnalysis) => void;
     onAnalyzing: () => void;
+    onError?: () => void;
     userEmail: string;
     setUserEmail: (email: string) => void;
 }
@@ -13,6 +14,7 @@ interface ResumeUploadProps {
 const ResumeUpload: React.FC<ResumeUploadProps> = ({
     onUploadSuccess,
     onAnalyzing,
+    onError,
     userEmail,
     setUserEmail,
 }) => {
@@ -87,11 +89,27 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({
         onAnalyzing();
 
         try {
-            const response = await uploadResume(selectedFile, userEmail);
+            console.log('📤 Starting resume upload...');
+            // Add timeout to prevent hanging
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Request timeout. Please try again.')), 120000); // 2 minutes
+            });
+
+            const uploadPromise = uploadResume(selectedFile, userEmail);
+            const response = await Promise.race([uploadPromise, timeoutPromise]) as any;
+            
+            console.log('✅ Resume upload successful:', response);
+            setIsUploading(false);
             onUploadSuccess(response.resume, response.analysis);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to upload resume');
+            console.error('❌ Resume upload error:', err);
+            const errorMessage = err instanceof Error ? err.message : 'Failed to upload resume';
+            setError(errorMessage);
             setIsUploading(false);
+            // Reset to upload step on error
+            if (onError) {
+                onError();
+            }
         }
     };
 

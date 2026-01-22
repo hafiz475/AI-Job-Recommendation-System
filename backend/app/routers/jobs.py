@@ -44,6 +44,8 @@ async def get_job_recommendations(
             detail="Resume not found"
         )
     
+    print(f"📋 Generating job recommendations for resume ID: {request.resume_id}")
+    
     # Prepare resume analysis for AI
     resume_analysis = {
         "skills": resume.skills or [],
@@ -54,11 +56,13 @@ async def get_job_recommendations(
     }
     
     try:
+        print("🤖 Starting AI job recommendation generation...")
         # Generate recommendations
         recommendations = await ai_service.generate_job_recommendations(
             resume_analysis,
             num_recommendations=request.num_recommendations
         )
+        print(f"✅ Generated {len(recommendations)} job recommendations")
         
         # Store recommendations in database
         stored_recommendations = []
