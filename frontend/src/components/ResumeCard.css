@@ -1,0 +1,103 @@
+.resume-card {
+    margin-bottom: var(--space-6);
+}
+
+.resume-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.resume-icon {
+    width: 52px;
+    height: 52px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.resume-icon svg {
+    width: 26px;
+    height: 26px;
+    color: white;
+}
+
+.resume-meta h3 {
+    font-size: 1.125rem;
+    margin-bottom: var(--space-1);
+    color: var(--neutral-100);
+}
+
+.resume-date {
+    font-size: 0.875rem;
+    color: var(--neutral-400);
+}
+
+.resume-summary {
+    margin-bottom: var(--space-6);
+    padding: var(--space-4);
+    background: rgba(139, 92, 246, 0.05);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--primary-500);
+}
+
+.resume-summary h4 {
+    font-size: 0.875rem;
+    color: var(--primary-400);
+    margin-bottom: var(--space-2);
+}
+
+.resume-summary p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.resume-section {
+    margin-bottom: var(--space-5);
+}
+
+.resume-section:last-child {
+    margin-bottom: 0;
+}
+
+.resume-section h4 {
+    font-size: 0.875rem;
+    color: var(--neutral-400);
+    margin-bottom: var(--space-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.skill-tag.more {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--neutral-400);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.roles-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.role-badge {
+    padding: var(--space-2) var(--space-4);
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: rgba(6, 182, 212, 0.1);
+    color: var(--accent-400);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    border-radius: var(--radius-md);
+}

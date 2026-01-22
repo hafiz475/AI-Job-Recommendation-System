@@ -1,0 +1,174 @@
+.analyzing-container {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6);
+}
+
+.analyzing-content {
+    text-align: center;
+    max-width: 500px;
+}
+
+.analyzing-content h2 {
+    margin-bottom: var(--space-3);
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.analyzing-subtitle {
+    color: var(--neutral-400);
+    margin-bottom: var(--space-8);
+}
+
+.brain-animation {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto var(--space-8);
+}
+
+.brain-circle {
+    position: absolute;
+    inset: 20px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-glow);
+}
+
+.brain-icon {
+    font-size: 2.5rem;
+    z-index: 2;
+}
+
+.brain-pulse {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background: rgba(139, 92, 246, 0.3);
+    animation: pulse-ring 2s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+.orbit {
+    position: absolute;
+    inset: 0;
+    border: 2px dashed rgba(139, 92, 246, 0.3);
+    border-radius: 50%;
+    animation: orbit-spin 8s linear infinite;
+}
+
+.orbit-2 {
+    inset: -10px;
+    animation-duration: 12s;
+    animation-direction: reverse;
+}
+
+.orbit-dot {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: var(--accent-400);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-400);
+}
+
+@keyframes orbit-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.analyzing-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+}
+
+.analyzing-step {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    opacity: 0.5;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.analyzing-step.active {
+    opacity: 1;
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.analyzing-step.completed {
+    opacity: 0.8;
+}
+
+.step-icon {
+    font-size: 1.25rem;
+}
+
+.step-label {
+    font-size: 0.95rem;
+    color: var(--neutral-300);
+}
+
+.step-pulse {
+    position: absolute;
+    right: var(--space-4);
+    width: 8px;
+    height: 8px;
+    background: var(--primary-500);
+    border-radius: 50%;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+.analyzing-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.analyzing-progress .progress-bar {
+    flex: 1;
+}
+
+.progress-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary-400);
+    min-width: 40px;
+}
+
+.analyzing-tip {
+    font-size: 0.875rem;
+    color: var(--neutral-500);
+    padding: var(--space-4);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+}
