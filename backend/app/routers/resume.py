@@ -67,7 +67,6 @@ async def upload_resume(
         db.refresh(user)
     
     try:
-        print(f"📄 Parsing resume: {file.filename}")
         # Parse resume
         raw_text = resume_parser.parse_resume(content, file.filename)
         cleaned_text = resume_parser.clean_text(raw_text)
@@ -78,11 +77,8 @@ async def upload_resume(
                 detail="Could not extract sufficient text from the resume. Please ensure the file is not corrupted."
             )
         
-        print(f"✅ Resume parsed successfully. Text length: {len(cleaned_text)}")
-        print("🤖 Starting AI analysis...")
         # Analyze with AI
         analysis = await ai_service.analyze_resume(cleaned_text)
-        print("✅ AI analysis completed")
         
         # Deactivate previous resumes
         db.query(Resume).filter(
@@ -129,7 +125,7 @@ async def upload_resume(
         return ResumeUploadResponse(
             resume=resume_response,
             analysis=analysis_response,
-            message=f"Resume uploaded and analyzed successfully! (Provider: {ai_service.get_provider_name()})"
+            message="Resume uploaded and analyzed successfully!"
         )
         
     except ValueError as e:

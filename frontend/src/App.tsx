@@ -27,10 +27,6 @@ function App() {
     setResume(null);
   };
 
-  const handleError = () => {
-    setStep('upload');
-  };
-
   return (
     <div className="app">
       <Header
@@ -43,7 +39,6 @@ function App() {
           <ResumeUpload
             onUploadSuccess={handleUploadSuccess}
             onAnalyzing={handleAnalyzing}
-            onError={handleError}
             userEmail={userEmail}
             setUserEmail={setUserEmail}
           />

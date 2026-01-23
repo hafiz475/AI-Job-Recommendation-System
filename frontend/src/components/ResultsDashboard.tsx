@@ -18,12 +18,9 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ resume, onReset }) 
     useEffect(() => {
         const fetchRecommendations = async () => {
             try {
-                console.log('🔍 Fetching job recommendations for resume:', resume.id);
                 const response = await getJobRecommendations(resume.id, 5);
-                console.log('✅ Job recommendations received:', response);
-                setRecommendations(response.recommendations || []);
+                setRecommendations(response.recommendations);
             } catch (err) {
-                console.error('❌ Error fetching recommendations:', err);
                 setError(err instanceof Error ? err.message : 'Failed to get recommendations');
             } finally {
                 setIsLoading(false);

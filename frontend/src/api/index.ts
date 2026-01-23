@@ -8,20 +8,10 @@ interface ApiError {
 
 async function handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
-        let errorMessage = 'An error occurred';
-        try {
-            const error: ApiError = await response.json();
-            errorMessage = error.detail || `Server error: ${response.status} ${response.statusText}`;
-        } catch {
-            errorMessage = `Server error: ${response.status} ${response.statusText}`;
-        }
-        throw new Error(errorMessage);
+        const error: ApiError = await response.json().catch(() => ({ detail: 'An error occurred' }));
+        throw new Error(error.detail);
     }
-    try {
-        return await response.json();
-    } catch (e) {
-        throw new Error('Invalid response from server');
-    }
+    return response.json();
 }
 
 // Resume API
@@ -30,19 +20,12 @@ export async function uploadResume(file: File, userEmail: string): Promise<any> 
     formData.append('file', file);
     formData.append('user_email', userEmail);
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/resume/upload`, {
-            method: 'POST',
-            body: formData,
-        });
+    const response = await fetch(`${API_BASE_URL}/resume/upload`, {
+        method: 'POST',
+        body: formData,
+    });
 
-        return handleResponse(response);
-    } catch (error) {
-        if (error instanceof TypeError && error.message.includes('fetch')) {
-            throw new Error('Network error: Could not connect to server. Please check if the backend is running.');
-        }
-        throw error;
-    }
+    return handleResponse(response);
 }
 
 export async function getResume(resumeId: number): Promise<any> {
@@ -60,25 +43,18 @@ export async function getJobRecommendations(
     resumeId: number,
     numRecommendations: number = 5
 ): Promise<any> {
-    try {
-        const response = await fetch(`${API_BASE_URL}/jobs/recommend`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                resume_id: resumeId,
-                num_recommendations: numRecommendations,
-            }),
-        });
+    const response = await fetch(`${API_BASE_URL}/jobs/recommend`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            resume_id: resumeId,
+            num_recommendations: numRecommendations,
+        }),
+    });
 
-        return handleResponse(response);
-    } catch (error) {
-        if (error instanceof TypeError && error.message.includes('fetch')) {
-            throw new Error('Network error: Could not connect to server. Please check if the backend is running.');
-        }
-        throw error;
-    }
+    return handleResponse(response);
 }
 
 export async function getResumeRecommendations(resumeId: number): Promise<any> {

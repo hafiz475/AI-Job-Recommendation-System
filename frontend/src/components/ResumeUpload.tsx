@@ -6,7 +6,6 @@ import './ResumeUpload.css';
 interface ResumeUploadProps {
     onUploadSuccess: (resume: Resume, analysis: ResumeAnalysis) => void;
     onAnalyzing: () => void;
-    onError?: () => void;
     userEmail: string;
     setUserEmail: (email: string) => void;
 }
@@ -14,7 +13,6 @@ interface ResumeUploadProps {
 const ResumeUpload: React.FC<ResumeUploadProps> = ({
     onUploadSuccess,
     onAnalyzing,
-    onError,
     userEmail,
     setUserEmail,
 }) => {
@@ -86,45 +84,14 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({
 
         setIsUploading(true);
         setError(null);
-        
-        // Record start time for minimum loading duration
-        const startTime = Date.now();
-        const MIN_LOADING_TIME = 5000; // 5 seconds minimum
-        
         onAnalyzing();
 
         try {
-            console.log('📤 Starting resume upload...');
-            // Add timeout to prevent hanging
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Request timeout. Please try again.')), 120000); // 2 minutes
-            });
-
-            const uploadPromise = uploadResume(selectedFile, userEmail);
-            const response = await Promise.race([uploadPromise, timeoutPromise]) as any;
-            
-            console.log('✅ Resume upload successful:', response);
-            
-            // Ensure minimum loading time of 5 seconds
-            const elapsedTime = Date.now() - startTime;
-            const remainingTime = Math.max(0, MIN_LOADING_TIME - elapsedTime);
-            
-            if (remainingTime > 0) {
-                console.log(`⏳ Waiting ${remainingTime}ms to complete minimum loading time...`);
-                await new Promise(resolve => setTimeout(resolve, remainingTime));
-            }
-            
-            setIsUploading(false);
+            const response = await uploadResume(selectedFile, userEmail);
             onUploadSuccess(response.resume, response.analysis);
         } catch (err) {
-            console.error('❌ Resume upload error:', err);
-            const errorMessage = err instanceof Error ? err.message : 'Failed to upload resume';
-            setError(errorMessage);
+            setError(err instanceof Error ? err.message : 'Failed to upload resume');
             setIsUploading(false);
-            // Reset to upload step on error
-            if (onError) {
-                onError();
-            }
         }
     };
 
