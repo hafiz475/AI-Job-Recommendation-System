@@ -45,9 +45,15 @@ app = FastAPI(
 )
 
 # Configure CORS
+origins = [
+    "http://localhost:5173",  # Local development
+    "http://localhost:3000",  # Alternative local
+    "https://ai-job-recommendation-system-omega.vercel.app",  # Vercel frontend
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
